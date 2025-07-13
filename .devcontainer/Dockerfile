@@ -24,8 +24,16 @@ RUN apt-get update && \
       locales \
       direnv \
       procps \
-      file && \
+      file \
+      apt-transport-https \
+      gnupg \
+      lsb-release && \
     locale-gen en_US.UTF-8 && \
+    # Install Docker CLI
+    curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg && \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends docker-ce-cli docker-buildx-plugin docker-compose-plugin && \
     apt-get autoremove -y && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
@@ -33,6 +41,8 @@ RUN apt-get update && \
 # Create vscode user and setup sudoers
 RUN groupadd --gid 1000 vscode && \
     useradd --uid 1000 --gid 1000 -m vscode -s /bin/zsh && \
+    groupadd docker && \
+    usermod -aG docker vscode && \
     echo "vscode ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/vscode && \
     chmod 0440 /etc/sudoers.d/vscode && \
     chsh -s "$(which zsh)" vscode

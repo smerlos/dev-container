@@ -1,0 +1,52 @@
+# Git and version control
+.git
+.gitignore
+.gitattributes
+
+# Documentation
+README*.md
+*.md
+CHANGELOG*
+LICENSE*
+
+# Build artifacts and temporary files
+.cache
+.tmp
+*.log
+node_modules
+.npm
+.pnpm-store
+
+# IDE and editor files
+.vscode/settings.json
+.vscode/launch.json
+.vscode/tasks.json
+.idea
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+*.orig
+
+# Docker files (except the one we're building)
+Dockerfile*
+!Dockerfile
+.dockerignore
+
+# DevContainer files that shouldn't be in image
+.devcontainer/devcontainer.json
+
+# Testing and CI
+.github
+.gitlab-ci.yml
+.travis.yml
+tests/
+test/
+
+# Environment and config files
+.env*
+!.envrc
+.config
