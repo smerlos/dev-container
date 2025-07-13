@@ -1,7 +1,7 @@
 # Multi-stage build for better caching and smaller final image
 FROM debian:12-slim as base
 
-# Set shell with pipefail option for safer RUN commands
+# Set shell with pipefail option for safer RUN commands - start with bash
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # Environment variables - set once for entire build
@@ -13,6 +13,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     LANGUAGE=en_US.UTF-8
 
 # Install system packages and setup locale in one layer
+# hadolint ignore=DL3008
 RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y --no-install-recommends \
@@ -50,6 +51,9 @@ RUN groupadd --gid 1000 vscode && \
     chmod 0440 /etc/sudoers.d/vscode && \
     chsh -s "$(which zsh)" vscode
 
+# Now switch to zsh for remaining operations since it's installed
+SHELL ["/bin/zsh", "-o", "pipefail", "-c"]
+
 # Switch to vscode user for remaining installations
 USER vscode
 WORKDIR /home/vscode
@@ -66,7 +70,7 @@ RUN eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && \
     curl -fsSL https://starship.rs/install.sh | sh -s -- --yes
 
 # Install Oh My Zsh and plugins in optimized layers
-RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+RUN zsh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 
 # Clone Oh My Zsh plugins efficiently
 RUN git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions && \
@@ -75,7 +79,7 @@ RUN git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions ~/.oh-m
 
 # Configure vim in separate layer
 RUN git clone --depth=1 https://github.com/amix/vimrc.git ~/.vim_runtime && \
-    sh ~/.vim_runtime/install_awesome_vimrc.sh
+    zsh ~/.vim_runtime/install_awesome_vimrc.sh
 
 # Configure shell environment in final layer
 RUN sed -i 's/plugins=(git)/plugins=(git direnv zsh-autosuggestions zsh-syntax-highlighting zsh-completions)/g' ~/.zshrc && \
@@ -98,6 +102,7 @@ SHELL ["/bin/zsh", "-l", "-c"]
 
 # Create setup script for workspace initialization (run as root to avoid sudo)
 USER root
+# hadolint ignore=SC1071
 RUN echo '#!/bin/zsh' > /usr/local/bin/setup-workspace && \
     echo 'echo "🚀 Initializing development workspace..."' >> /usr/local/bin/setup-workspace && \
     echo 'source ~/.zshrc' >> /usr/local/bin/setup-workspace && \
@@ -109,9 +114,10 @@ RUN echo '#!/bin/zsh' > /usr/local/bin/setup-workspace && \
 # Switch back to vscode user
 USER vscode
 
-# Final health check (minimal) - using bash for compatibility
-RUN bash -c 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && \
+# Final health check (minimal) - using zsh consistently
+# hadolint ignore=SC1071
+RUN eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && \
     ~/.local/bin/mise --version > /dev/null && \
     starship --version > /dev/null && \
     direnv --version > /dev/null && \
-    echo "✅ All tools installed successfully"'
+    echo "✅ All tools installed successfully"
