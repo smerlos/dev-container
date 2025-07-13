@@ -41,7 +41,7 @@ jobs:
           VALIDATE_YAML: true
           VALIDATE_JSON: true
           VALIDATE_MARKDOWN: true
-          DOCKERFILE_HADOLINT_FILE_NAME: .devcontainer/Dockerfile
+          FILTER_REGEX_INCLUDE: .*\.devcontainer/Dockerfile.*
 
   # Build and push container image
   build-and-push:
