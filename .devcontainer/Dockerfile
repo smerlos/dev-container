@@ -1,6 +1,9 @@
 # Multi-stage build for better caching and smaller final image
 FROM debian:12-slim as base
 
+# Set shell with pipefail option for safer RUN commands
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
 # Environment variables - set once for entire build
 ENV DEBIAN_FRONTEND=noninteractive \
     TZ=Etc/UTC \
@@ -77,10 +80,10 @@ RUN git clone --depth=1 https://github.com/amix/vimrc.git ~/.vim_runtime && \
 # Configure shell environment in final layer
 RUN sed -i 's/plugins=(git)/plugins=(git direnv zsh-autosuggestions zsh-syntax-highlighting zsh-completions)/g' ~/.zshrc && \
     { \
-      echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"'; \
-      echo 'eval "$(~/.local/bin/mise activate zsh)"'; \
-      echo 'eval "$(starship init zsh)"'; \
-      echo 'eval "$(direnv hook zsh)"'; \
+      echo "eval \"\$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)\""; \
+      echo "eval \"\$(~/.local/bin/mise activate zsh)\""; \
+      echo "eval \"\$(starship init zsh)\""; \
+      echo "eval \"\$(direnv hook zsh)\""; \
     } >> ~/.zshrc
 
 # Setup direnv configuration
@@ -93,18 +96,22 @@ RUN mkdir -p ~/.config/direnv/lib ~/.config/direnv && \
 # Set shell for subsequent commands
 SHELL ["/bin/zsh", "-l", "-c"]
 
-# Create setup script for workspace initialization
-RUN echo '#!/bin/zsh' > /home/vscode/setup-workspace && \
-    echo 'echo "� Initializing development workspace..."' >> /home/vscode/setup-workspace && \
-    echo 'source ~/.zshrc' >> /home/vscode/setup-workspace && \
-    echo 'if [ -f .envrc ]; then direnv allow .; fi' >> /home/vscode/setup-workspace && \
-    echo 'echo "✅ Workspace ready!"' >> /home/vscode/setup-workspace && \
-    chmod +x /home/vscode/setup-workspace && \
-    sudo ln -s /home/vscode/setup-workspace /usr/local/bin/setup-workspace
+# Create setup script for workspace initialization (run as root to avoid sudo)
+USER root
+RUN echo '#!/bin/zsh' > /usr/local/bin/setup-workspace && \
+    echo 'echo "🚀 Initializing development workspace..."' >> /usr/local/bin/setup-workspace && \
+    echo 'source ~/.zshrc' >> /usr/local/bin/setup-workspace && \
+    echo 'if [ -f .envrc ]; then direnv allow .; fi' >> /usr/local/bin/setup-workspace && \
+    echo 'echo "✅ Workspace ready!"' >> /usr/local/bin/setup-workspace && \
+    chmod +x /usr/local/bin/setup-workspace && \
+    chown vscode:vscode /usr/local/bin/setup-workspace
 
-# Final health check (minimal)
-RUN eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && \
+# Switch back to vscode user
+USER vscode
+
+# Final health check (minimal) - using bash for compatibility
+RUN bash -c 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && \
     ~/.local/bin/mise --version > /dev/null && \
     starship --version > /dev/null && \
     direnv --version > /dev/null && \
-    echo "✅ All tools installed successfully"
+    echo "✅ All tools installed successfully"'
