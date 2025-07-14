@@ -11,6 +11,7 @@ curl -fsSL https://raw.githubusercontent.com/smerlos/dev-container/main/install.
 ```
 
 This will:
+
 - ✅ Check prerequisites (Docker)
 - ✅ Download dev container configuration
 - ✅ Pull the container image
@@ -20,6 +21,7 @@ This will:
 ## 🎯 What's Included
 
 ### Core Tools
+
 - **Docker-in-Docker**: Run containers from within the dev container
 - **mise**: Modern runtime version manager (replaces nvm, rbenv, pyenv, etc.)
 - **direnv**: Automatic environment variable loading
@@ -27,31 +29,36 @@ This will:
 - **Oh My Zsh**: Enhanced shell with useful plugins
 
 ### Development Essentials
+
 - **Git**: Version control with enhanced configuration
 - **Vim**: Configured with awesome-vimrc
 - **Build tools**: gcc, make, and essential development packages
 - **Homebrew**: Package manager for additional tools
 
-### VS Code Integration
+### Visual Studio Code Integration
+
 - **Essential extensions**: mise, direnv, Docker, and editor config sharing
 - **Optimized settings**: Performance and usability improvements
-- **Seamless experience**: Full VS Code functionality in containers
+- **Seamless experience**: Full Visual Studio Code functionality in containers
 
 ## 🛠️ Usage
 
 ### 1. Install and Setup
+
 ```bash
 # In your project directory
 curl -fsSL https://raw.githubusercontent.com/smerlos/dev-container/main/install.sh | bash
 ```
 
-### 2. Open in VS Code
+### 2. Open in Visual Studio Code
+
 1. Install the "Dev Containers" extension
-2. Open your project in VS Code
+2. Open your project in Visual Studio Code
 3. Press `Ctrl+Shift+P` → "Dev Containers: Reopen in Container"
 4. Wait for the container to start
 
 ### 3. Start Developing
+
 The container includes everything you need:
 
 ```bash
@@ -72,10 +79,10 @@ docker compose up -d
 
 After installation, your project will have:
 
-```
+```text
 your-project/
 ├── .devcontainer/
-│   └── devcontainer.json    # VS Code dev container config
+│   └── devcontainer.json    # Visual Studio Code dev container config
 ├── .envrc                   # Environment variables (direnv)
 ├── .mise.toml              # Tool versions (mise)
 └── README.md               # Usage instructions
@@ -84,6 +91,7 @@ your-project/
 ## 🔧 Configuration
 
 ### Tool Versions (.mise.toml)
+
 ```toml
 [tools]
 node = "20"
@@ -96,6 +104,7 @@ PROJECT_NAME = "my-awesome-project"
 ```
 
 ### Environment Variables (.envrc)
+
 ```bash
 # Load mise configuration
 use mise
@@ -106,7 +115,8 @@ export API_KEY="your-api-key"
 export NODE_ENV="development"
 ```
 
-### VS Code Extensions (.devcontainer/devcontainer.json)
+### Visual Studio Code Extensions (.devcontainer/devcontainer.json)
+
 ```json
 {
   "customizations": {
@@ -143,6 +153,7 @@ docker network create my-network
 ## 🎨 Customization
 
 ### Add More Tools
+
 ```bash
 # Inside the container
 mise install ruby@3.2
@@ -150,15 +161,19 @@ mise install terraform@1.6
 brew install jq
 ```
 
-### Modify VS Code Settings
+### Modify Visual Studio Code Settings
+
 Edit `.devcontainer/devcontainer.json` to:
+
 - Add extensions
 - Change container settings
 - Mount additional volumes
 - Set environment variables
 
 ### Shell Configuration
+
 The container uses Zsh with Oh My Zsh and includes:
+
 - Auto-suggestions
 - Syntax highlighting
 - Git integration
@@ -167,15 +182,17 @@ The container uses Zsh with Oh My Zsh and includes:
 ## 🔍 Troubleshooting
 
 ### Container Won't Start
+
 ```bash
 # Check Docker is running
 docker info
 
-# Check VS Code Dev Containers extension is installed
+# Check Visual Studio Code Dev Containers extension is installed
 code --list-extensions | grep ms-vscode-remote.remote-containers
 ```
 
 ### Missing Tools
+
 ```bash
 # Inside the container, run the setup script
 setup-workspace
@@ -186,7 +203,9 @@ brew install your-tool
 ```
 
 ### Permission Issues
+
 The container runs as user `vscode` with sudo access:
+
 ```bash
 # If you need root access
 sudo apt update
@@ -196,6 +215,7 @@ sudo apt install package-name
 ## 🚀 Advanced Usage
 
 ### Custom Dockerfile
+
 If you need additional customization, you can extend the base image:
 
 ```dockerfile
@@ -213,6 +233,7 @@ RUN mise install your-tool@version
 ```
 
 ### CI/CD Integration
+
 Use the same container in your CI/CD pipelines:
 
 ```yaml
@@ -230,7 +251,7 @@ jobs:
 ## 📝 Requirements
 
 - **Docker**: Version 20.10 or later
-- **VS Code**: With Dev Containers extension
+- **Visual Studio Code**: With Dev Containers extension
 - **Operating System**: Linux, macOS, or Windows with WSL2
 
 ## 🤝 Contributing
@@ -247,4 +268,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [direnv](https://direnv.net/) - Environment variable manager
 - [Starship](https://starship.rs/) - Cross-shell prompt
 - [Oh My Zsh](https://ohmyz.sh/) - Zsh framework
-- [VS Code Dev Containers](https://code.visualstudio.com/docs/devcontainers/containers) - Container development
+- [Visual Studio Code Dev Containers](https://code.visualstudio.com/docs/devcontainers/containers) - Container development

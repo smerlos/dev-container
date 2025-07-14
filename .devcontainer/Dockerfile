@@ -1,5 +1,4 @@
-# Multi-stage build for better caching and smaller final image
-FROM debian:12-slim as base
+FROM mcr.microsoft.com/devcontainers/base:debian
 
 # Set shell with pipefail option for safer RUN commands - start with bash
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -8,9 +7,9 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 ENV DEBIAN_FRONTEND=noninteractive \
     TZ=Etc/UTC \
     NONINTERACTIVE=1 \
-    LC_ALL=en_US.UTF-8 \
-    LANG=en_US.UTF-8 \
-    LANGUAGE=en_US.UTF-8
+    LC_ALL=C.UTF-8 \
+    LANG=C.UTF-8 \
+    LANGUAGE=en_US:en
 
 # Install system packages and setup locale in one layer
 # hadolint ignore=DL3008
@@ -31,8 +30,25 @@ RUN apt-get update && \
       file \
       apt-transport-https \
       gnupg \
-      lsb-release && \
-    locale-gen en_US.UTF-8 && \
+      lsb-release \
+      # Python build dependencies
+      libssl-dev \
+      zlib1g-dev \
+      libbz2-dev \
+      libreadline-dev \
+      libsqlite3-dev \
+      libncursesw5-dev \
+      xz-utils \
+      tk-dev \
+      libxml2-dev \
+      libxmlsec1-dev \
+      libffi-dev \
+      liblzma-dev && \
+    # Configure locales properly
+    sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && \
+    locale-gen && \
+    dpkg-reconfigure --frontend=noninteractive locales && \
+    update-locale LANG=en_US.UTF-8 && \
     # Install Docker CLI
     curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg && \
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null && \
@@ -42,10 +58,15 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Create vscode user and setup sudoers
-RUN groupadd --gid 1000 vscode && \
-    useradd --uid 1000 --gid 1000 -m vscode -s /bin/zsh && \
-    groupadd docker && \
+# Set proper locale environment for remaining build stages
+ENV LC_ALL=en_US.UTF-8 \
+    LANG=en_US.UTF-8 \
+    LANGUAGE=en_US.UTF-8
+
+# Create vscode user and setup sudoers if they don't exist
+RUN if ! getent group vscode > /dev/null; then groupadd --gid 1000 vscode; fi && \
+    if ! id -u vscode > /dev/null 2>&1; then useradd --uid 1000 --gid 1000 -m vscode -s /bin/zsh; fi && \
+    groupadd -f docker && \
     usermod -aG docker vscode && \
     echo "vscode ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/vscode && \
     chmod 0440 /etc/sudoers.d/vscode && \
@@ -63,17 +84,21 @@ WORKDIR /home/vscode
 RUN NONINTERACTIVE=1 bash -c \
       "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" && \
     eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && \
-    brew update --quiet
+    brew update --quiet && \
+    # Install gcc as recommended by Homebrew
+    brew install gcc
+
 
 # Install development tools in parallel where possible
 # hadolint ignore=SC1071
 RUN eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && \
     curl -fsSL https://mise.run | sh && \
-    curl -fsSL https://starship.rs/install.sh | sh -s -- --yes
-
+    curl -fsSL https://starship.rs/install.sh | sh -s -- --yes && 
 # Install Oh My Zsh and plugins in optimized layers
 # hadolint ignore=SC1071
-RUN zsh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+RUN if [ ! -d "/home/vscode/.oh-my-zsh" ]; then \
+      zsh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended; \
+    fi
 
 # Clone Oh My Zsh plugins efficiently
 # hadolint ignore=SC1071
@@ -96,13 +121,10 @@ RUN sed -i 's/plugins=(git)/plugins=(git direnv zsh-autosuggestions zsh-syntax-h
       echo "eval \"\$(direnv hook zsh)\""; \
     } >> ~/.zshrc
 
-# Setup direnv configuration
+# Setup direnv configuration for global mise integration
 # hadolint ignore=SC1071
-RUN mkdir -p ~/.config/direnv/lib ~/.config/direnv && \
-    echo 'use mise' > ~/.envrc && \
-    ~/.local/bin/mise direnv activate > ~/.config/direnv/lib/use_mise.sh && \
-    echo 'use mise' >> ~/.config/direnv/direnvrc && \
-    direnv allow ~/.envrc
+RUN mkdir -p ~/.config/direnv && \
+    echo 'eval "$(~/.local/bin/mise hook direnv)"' > ~/.config/direnv/direnvrc
 
 # Set shell for subsequent commands
 SHELL ["/bin/zsh", "-l", "-c"]
@@ -113,7 +135,6 @@ USER root
 RUN echo '#!/bin/zsh' > /usr/local/bin/setup-workspace && \
     echo 'echo "🚀 Initializing development workspace..."' >> /usr/local/bin/setup-workspace && \
     echo 'source ~/.zshrc' >> /usr/local/bin/setup-workspace && \
-    echo 'if [ -f .envrc ]; then direnv allow .; fi' >> /usr/local/bin/setup-workspace && \
     echo 'echo "✅ Workspace ready!"' >> /usr/local/bin/setup-workspace && \
     chmod +x /usr/local/bin/setup-workspace && \
     chown vscode:vscode /usr/local/bin/setup-workspace

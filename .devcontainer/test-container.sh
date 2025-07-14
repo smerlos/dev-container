@@ -32,29 +32,29 @@ echo "  ✓ Checking brew: $(brew --version | head -1)"
 echo ""
 echo "🐚 Testing Oh My Zsh..."
 if [ -d ~/.oh-my-zsh ]; then
-    echo "  ✓ Oh My Zsh installed"
-    if [ -d ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions ]; then
-        echo "  ✓ zsh-autosuggestions plugin installed"
-    fi
-    if [ -d ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting ]; then
-        echo "  ✓ zsh-syntax-highlighting plugin installed"
-    fi
-    if [ -d ~/.oh-my-zsh/custom/plugins/zsh-completions ]; then
-        echo "  ✓ zsh-completions plugin installed"
-    fi
+	echo "  ✓ Oh My Zsh installed"
+	if [ -d ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions ]; then
+		echo "  ✓ zsh-autosuggestions plugin installed"
+	fi
+	if [ -d ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting ]; then
+		echo "  ✓ zsh-syntax-highlighting plugin installed"
+	fi
+	if [ -d ~/.oh-my-zsh/custom/plugins/zsh-completions ]; then
+		echo "  ✓ zsh-completions plugin installed"
+	fi
 else
-    echo "  ❌ Oh My Zsh not found"
-    exit 1
+	echo "  ❌ Oh My Zsh not found"
+	exit 1
 fi
 
 # Test 5: Vim configuration
 echo ""
 echo "📝 Testing Vim configuration..."
 if [ -d ~/.vim_runtime ]; then
-    echo "  ✓ Awesome Vim configuration installed"
+	echo "  ✓ Awesome Vim configuration installed"
 else
-    echo "  ❌ Vim configuration not found"
-    exit 1
+	echo "  ❌ Vim configuration not found"
+	exit 1
 fi
 
 # Test 6: Environment setup
@@ -65,39 +65,39 @@ echo "  ✓ HOME: $HOME"
 echo "  ✓ SHELL: $SHELL"
 echo "  ✓ PWD: $PWD"
 if [ -n "$WORKSPACE" ]; then
-    echo "  ✓ WORKSPACE: $WORKSPACE"
+	echo "  ✓ WORKSPACE: $WORKSPACE"
 else
-    echo "  ⚠️  WORKSPACE not set"
+	echo "  ⚠️  WORKSPACE not set"
 fi
 
 # Test 7: Setup script
 echo ""
 echo "⚙️  Testing setup script..."
 if command -v setup-workspace >/dev/null 2>&1; then
-    echo "  ✓ setup-workspace command available"
+	echo "  ✓ setup-workspace command available"
 else
-    echo "  ❌ setup-workspace command not found"
-    exit 1
+	echo "  ❌ setup-workspace command not found"
+	exit 1
 fi
 
 # Test 8: Direnv functionality
 echo ""
 echo "📁 Testing direnv functionality..."
 if [ -f ~/.envrc ]; then
-    echo "  ✓ Default .envrc exists"
+	echo "  ✓ Default .envrc exists"
 else
-    echo "  ⚠️  Default .envrc not found"
+	echo "  ⚠️  Default .envrc not found"
 fi
 
 # Test 9: Mise functionality
 echo ""
 echo "🔧 Testing mise functionality..."
 if ~/.local/bin/mise ls >/dev/null 2>&1; then
-    echo "  ✓ Mise is functional"
-    echo "  📋 Available tools: $(~/.local/bin/mise ls-remote | head -5 | tr '\n' ' ')"
+	echo "  ✓ Mise is functional"
+	echo "  📋 Available tools: $(~/.local/bin/mise ls-remote | head -5 | tr '\n' ' ')"
 else
-    echo "  ❌ Mise not working properly"
-    exit 1
+	echo "  ❌ Mise not working properly"
+	exit 1
 fi
 
 echo ""

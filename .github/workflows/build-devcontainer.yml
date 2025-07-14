@@ -4,15 +4,15 @@ on:
   push:
     branches: [main, dev]
     paths:
-      - '.devcontainer/**'
-      - 'Dockerfile*'
-      - '.github/workflows/build-devcontainer.yml'
+      - ".devcontainer/**"
+      - "Dockerfile*"
+      - ".github/workflows/build-devcontainer.yml"
   pull_request:
     branches: [main, dev]
     paths:
-      - '.devcontainer/**'
-      - 'Dockerfile*'
-      - '.github/workflows/build-devcontainer.yml'
+      - ".devcontainer/**"
+      - "Dockerfile*"
+      - ".github/workflows/build-devcontainer.yml"
   workflow_dispatch:
 
 env:
@@ -35,13 +35,13 @@ jobs:
         env:
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VALIDATE_ALL_CODEBASE: false
+          VALIDATE_ALL_CODEBASE: true
           VALIDATE_DOCKERFILE_HADOLINT: true
           VALIDATE_BASH: true
           VALIDATE_YAML: true
           VALIDATE_JSON: true
           VALIDATE_MARKDOWN: true
-          FILTER_REGEX_INCLUDE: .*\.devcontainer/Dockerfile.*
+          FILTER_REGEX_INCLUDE: .*
 
   # Build and push container image
   build-and-push:
@@ -167,8 +167,8 @@ jobs:
       - name: Test container functionality
         run: |
           # Pull the built image using the truncated SHA tag
-          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}-${GITHUB_SHA::7}
-          
+          docker pull "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}-${GITHUB_SHA::7}"
+
           # Test basic functionality
-          docker run --rm ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}-${GITHUB_SHA::7} \
+          docker run --rm "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}-${GITHUB_SHA::7}" \
             /bin/zsh -c "source ~/.zshrc && mise --version && starship --version && echo 'Container test passed!'"

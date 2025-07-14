@@ -1,43 +1,43 @@
 {
-	"name": "Modern Development Container with Docker-in-Docker",
-	"image": "ghcr.io/smerlos/dev-container:latest",
-	"remoteUser": "vscode",
-	"workspaceFolder": "/workspace",
-	"customizations": {
-		"vscode": {
-			"settings": {
-				"terminal.integrated.defaultProfile.linux": "zsh",
-				"terminal.integrated.profiles.linux": {
-					"zsh": {
-						"path": "/bin/zsh",
-						"args": ["-l"]
-					}
-				}
-			},
-			"extensions": [
-				"ms-vscode.vscode-docker",
-				"mkhl.direnv",
-				"EditorConfig.EditorConfig",
-				"jdx.mise"
-			]
-		}
-	},
-	"postCreateCommand": "setup-workspace",
-	"features": {
-		"ghcr.io/devcontainers/features/docker-in-docker:2": {
-			"moby": true,
-			"azureDnsAutoDetection": true,
-			"installDockerBuildx": true,
-			"version": "latest",
-			"dockerDashComposeVersion": "v2"
-		}
-	},
-	"forwardPorts": [],
-	"mounts": [
-		"source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached"
-	],
-	"containerEnv": {
-		"WORKSPACE": "/workspace"
-	},
-	"privileged": true
+  "name": "Modern Development Container with Docker-in-Docker",
+  "image": "ghcr.io/smerlos/dev-container:latest",
+  "remoteUser": "vscode",
+  "workspaceFolder": "/workspace",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "zsh",
+        "terminal.integrated.profiles.linux": {
+          "zsh": {
+            "path": "/bin/zsh",
+            "args": ["-l"]
+          }
+        }
+      },
+      "extensions": [
+        "ms-vscode.vscode-docker",
+        "mkhl.direnv",
+        "EditorConfig.EditorConfig",
+        "jdx.mise"
+      ]
+    }
+  },
+  "postCreateCommand": "setup-workspace",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "moby": true,
+      "azureDnsAutoDetection": true,
+      "installDockerBuildx": true,
+      "version": "latest",
+      "dockerDashComposeVersion": "v2"
+    }
+  },
+  "forwardPorts": [],
+  "mounts": [
+    "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached"
+  ],
+  "containerEnv": {
+    "WORKSPACE": "/workspace"
+  },
+  "privileged": true
 }
