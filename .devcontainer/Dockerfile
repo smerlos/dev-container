@@ -59,29 +59,35 @@ USER vscode
 WORKDIR /home/vscode
 
 # Install Homebrew in a separate layer for better caching
+# hadolint ignore=SC1071
 RUN NONINTERACTIVE=1 bash -c \
       "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" && \
     eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && \
     brew update --quiet
 
 # Install development tools in parallel where possible
+# hadolint ignore=SC1071
 RUN eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && \
     curl -fsSL https://mise.run | sh && \
     curl -fsSL https://starship.rs/install.sh | sh -s -- --yes
 
 # Install Oh My Zsh and plugins in optimized layers
+# hadolint ignore=SC1071
 RUN zsh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 
 # Clone Oh My Zsh plugins efficiently
+# hadolint ignore=SC1071
 RUN git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions && \
     git clone --depth=1 https://github.com/zsh-users/zsh-syntax-highlighting ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting && \
     git clone --depth=1 https://github.com/zsh-users/zsh-completions ~/.oh-my-zsh/custom/plugins/zsh-completions
 
 # Configure vim in separate layer
+# hadolint ignore=SC1071
 RUN git clone --depth=1 https://github.com/amix/vimrc.git ~/.vim_runtime && \
     zsh ~/.vim_runtime/install_awesome_vimrc.sh
 
 # Configure shell environment in final layer
+# hadolint ignore=SC1071
 RUN sed -i 's/plugins=(git)/plugins=(git direnv zsh-autosuggestions zsh-syntax-highlighting zsh-completions)/g' ~/.zshrc && \
     { \
       echo "eval \"\$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)\""; \
@@ -91,6 +97,7 @@ RUN sed -i 's/plugins=(git)/plugins=(git direnv zsh-autosuggestions zsh-syntax-h
     } >> ~/.zshrc
 
 # Setup direnv configuration
+# hadolint ignore=SC1071
 RUN mkdir -p ~/.config/direnv/lib ~/.config/direnv && \
     echo 'use mise' > ~/.envrc && \
     ~/.local/bin/mise direnv activate > ~/.config/direnv/lib/use_mise.sh && \
