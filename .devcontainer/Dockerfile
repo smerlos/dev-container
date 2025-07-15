@@ -63,7 +63,7 @@ RUN NONINTERACTIVE=1 bash -c \
       "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" && \
     eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && \
     brew update --quiet && \
-    brew install gcc
+    brew install gcc update --quiet
 
 # Install dev tools, Oh My Zsh, plugins, and vimrc in a single layer to reduce image size
 # hadolint ignore=SC1071
