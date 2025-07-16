@@ -59,11 +59,9 @@ SHELL ["/bin/zsh", "-o", "pipefail", "-c"]
 
 # Install Homebrew in its own layer for better caching
 # hadolint ignore=SC1071
-RUN NONINTERACTIVE=1 bash -c \
+    RUN NONINTERACTIVE=1 bash -c \
       "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" && \
-    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && \
-    brew update --quiet && \
-    brew install gcc update --quiet
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
 # Install dev tools, Oh My Zsh, plugins, and vimrc in a single layer to reduce image size
 # hadolint ignore=SC1071
