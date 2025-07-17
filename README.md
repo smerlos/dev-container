@@ -128,7 +128,7 @@ export NODE_ENV="development"
     "vscode": {
       "extensions": [
         "jdinhlife.gruvbox",
-        "ms-vscode.vscode-direnv",
+        "mkhl.direnv",
         "ms-azuretools.vscode-docker"
       ]
     }
