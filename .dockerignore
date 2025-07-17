@@ -34,6 +34,7 @@ Thumbs.db
 # Docker files (except the one we're building)
 Dockerfile*
 !Dockerfile
+!.devcontainer/Dockerfile
 .dockerignore
 
 # DevContainer files that shouldn't be in image
