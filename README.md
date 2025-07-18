@@ -1,9 +1,9 @@
+# Modern Development Container
+
 [![CI](https://github.com/smerlos/dev-container/actions/workflows/ci.yml/badge.svg)](https://github.com/smerlos/dev-container/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/smerlos/dev-container/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/smerlos/dev-container/actions/workflows/codeql-analysis.yml)
 [![Docker Pulls](https://img.shields.io/docker/pulls/smerlos/dev-container)](https://hub.docker.com/r/smerlos/dev-container)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-
-# Modern Development Container
 
 A production-ready development container with Docker-in-Docker support, modern tooling, and zero-configuration setup.
 
