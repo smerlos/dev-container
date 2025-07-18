@@ -74,10 +74,24 @@ fi
 echo ""
 echo "⚙️  Testing setup script..."
 if command -v setup-workspace >/dev/null 2>&1; then
-	echo "  ✓ setup-workspace command available"
+        echo "  ✓ setup-workspace command available"
+        echo "  ➡️  Running setup-workspace..."
+        if output=$(setup-workspace); then
+                echo "${output}"
+                if echo "$output" | grep -q "Workspace ready"; then
+                        echo "  ✓ setup-workspace executed successfully"
+                else
+                        echo "  ❌ Unexpected setup-workspace output"
+                        exit 1
+                fi
+        else
+                echo "${output}"
+                echo "  ❌ setup-workspace failed"
+                exit 1
+        fi
 else
-	echo "  ❌ setup-workspace command not found"
-	exit 1
+        echo "  ❌ setup-workspace command not found"
+        exit 1
 fi
 
 # Test 8: Direnv functionality
