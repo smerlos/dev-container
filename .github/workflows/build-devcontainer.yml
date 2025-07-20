@@ -3,18 +3,8 @@ name: Build and Publish Dev Container
 on:
   push:
     branches: [main, dev]
-    paths:
-      - ".devcontainer/**"
-      - "Dockerfile*"
-      - ".github/workflows/build-devcontainer.yml"
   pull_request:
     branches: [main, dev]
-    paths:
-      - ".devcontainer/**"
-      - "Dockerfile*"
-      - ".github/workflows/build-devcontainer.yml"
-  workflow_dispatch:
-
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
